@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="VisuDlg_CheckedClear" Id="{89e104e6-2c49-4800-92a6-e1989698cc16}" SpecialFunc="None">
+    <Declaration><![CDATA[// clear for the Numpad, not NumpadBasic
+FUNCTION VisuDlg_CheckedClear : Bool
+VAR_IN_OUT
+	stOutputValue : STRING;
+	stVariableValue : STRING;
+	flags : DWORD;
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// because of integrated visu, put into a function.
+// reason: unknown g_XExp
+stVariableValue := '';
+stOutputValue := '';
+g_XExp := FALSE;
+flags := flags AND NOT SINT_TO_DWORD(16#0008);
+flags := flags AND NOT SINT_TO_DWORD(16#0010);]]></ST>
+    </Implementation>
+    <LineIds Name="VisuDlg_CheckedClear">
+      <LineId Id="16" Count="0" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="8" Count="3" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="VisuDlg_ProcessExpFloatFormatSwitch" Id="{e877797c-225f-4c48-a9d2-ea54050f36db}" SpecialFunc="None">
+    <Declaration><![CDATA[/// switches the format of the displayed value
+/// between exponential and float / decimal value
+/// and changes caret position and selection
+FUNCTION VisuDlg_ProcessExpFloatFormatSwitch : BOOL
+VAR_IN_OUT
+	stOutputValue : STRING;
+	stVariableValue : STRING;
+	/// The current position of the caret. Either within the text or at the end of the text
+	iCaretPosition		: INT;
+	/// The start of the selected text (1-relative)
+	iSelectionStart		: INT;
+	/// The end of the selected text (1-relative). If the complete text is selected this
+	/// parameter is textlength + 1
+	iSelectionEnd		: INT;		
+	/// Initialize of global value for extended numpad, should be done with the first action.
+	bInit 				: BOOL;
+END_VAR
+VAR_INPUT
+	bPassword: BOOL;
+END_VAR
+VAR
+	rBuffer : REAL;
+	/// Helper class, that formats real variables using a custom format string
+	{attribute 'ieccodeconversion_datatype' := 'VisuElemBase.VisuFbPrintfRealVarConverted'}
+	PrintfRealVar : VisuElems.VisuFbPrintfRealVar;
+	// just defined string size
+	stResult : STRING(50);	
+	sFormat : STRING;
+	i : INT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[DialogCheckInitForExponential(bInit, stVariableValue);
+
+IF g_XExp = FALSE THEN
+	g_XExp := TRUE;
+	sFormat := '%e';
+ELSE
+	g_XExp := FALSE;
+	sFormat := '%g';
+END_IF
+
+rBuffer := STRING_TO_REAL(stVariableValue);
+
+// we always use string, and not wstring
+PrintfRealVar.SetVariable(ADR(rBuffer));
+PrintfRealVar.pBuffer := ADR(stResult);
+PrintfRealVar.dwBufferSize := 50;
+PrintfRealVar.Printf(ADR(sFormat));
+
+stVariableValue := stResult;
+
+IF bPassword THEN
+	stOutputValue := '';
+	FOR i := 0 TO LEN(stVariableValue) - 1 DO
+		stOutputValue := CONCAT(stOutputValue, Dialog_Constants.PASSWORD_CHAR);
+	END_FOR
+ELSE
+	stOutputValue := stVariableValue;
+END_IF
+
+// set the caret to the end of the value:
+iCaretPosition := LEN(stOutputValue) + 1;
+iSelectionStart := iSelectionEnd := iCaretPosition;]]></ST>
+    </Implementation>
+    <LineIds Name="VisuDlg_ProcessExpFloatFormatSwitch">
+      <LineId Id="17" Count="2" />
+      <LineId Id="52" Count="0" />
+      <LineId Id="21" Count="1" />
+      <LineId Id="53" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="67" Count="1" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="33" Count="1" />
+      <LineId Id="40" Count="2" />
+      <LineId Id="44" Count="0" />
+      <LineId Id="55" Count="2" />
+      <LineId Id="62" Count="1" />
+      <LineId Id="58" Count="0" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="59" Count="2" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="79" Count="0" />
+      <LineId Id="78" Count="0" />
+      <LineId Id="81" Count="0" />
+      <LineId Id="80" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

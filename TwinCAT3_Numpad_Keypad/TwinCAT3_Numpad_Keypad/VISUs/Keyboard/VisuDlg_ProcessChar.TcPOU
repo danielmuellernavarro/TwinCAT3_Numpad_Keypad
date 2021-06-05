@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="VisuDlg_ProcessChar" Id="{20bf5586-1657-48f7-8dfe-47afe39b40f3}" SpecialFunc="None">
+    <Declaration><![CDATA[/// This function takes a given character and appends/inserts it in the string representing the variable value.
+/// To decide, which action has to be performed, the current caret position and the currently selected text is
+/// evaluated. 
+FUNCTION VisuDlg_ProcessChar
+VAR_IN_OUT
+	/// This is the string representation of the variable value, that will be displayed
+	/// in the visualization. If the flag xPassword is TRUE the variable value will be
+	/// display with password characters
+	stOutputValue		: STRING;
+	/// This parameter is the variable value, where the character is appended/inserted
+	stVariableValue		: STRING;
+	/// The current position of the caret. Either within the text or at the end of the text
+	iCaretPosition		: INT;
+	/// The start of the selected text (1-relative)
+	iSelectionStart		: INT;
+	/// The end of the selected text (1-relative). If the complete text is selected this
+	/// parameter is textlength + 1
+	iSelectionEnd		: INT;
+END_VAR
+VAR_INPUT
+	/// Inidicates, whether the entered value should be readable (FALSE) or displayed with
+	/// password characters
+	xPassword			: BOOL;
+	/// The character to append/insert
+	cToConsume			: STRING(1);
+END_VAR
+VAR
+	// the keypad calls this method, where we dont use the global flag for exp
+	bInitExp : BOOL := FALSE;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[VisuDlg_ProcessCharWithInit(stOutputValue, stVariableValue, iCaretPosition, iSelectionStart, iSelectionEnd, bInitExp, xPassword, cToConsume);]]></ST>
+    </Implementation>
+    <LineIds Name="VisuDlg_ProcessChar">
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

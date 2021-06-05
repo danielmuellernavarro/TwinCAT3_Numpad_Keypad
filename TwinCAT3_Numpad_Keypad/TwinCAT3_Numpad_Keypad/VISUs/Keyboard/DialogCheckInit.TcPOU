@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="DialogCheckInit" Id="{58a5f58b-ffa1-4982-a209-36f8d1d5471a}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION DialogCheckInit : BOOL
+VAR_IN_OUT
+	stValue : STRING;
+	stOutput : STRING;
+	bInit : BOOL;
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF bInit THEN
+	stValue := ''; 
+	stOutput := '';
+	g_XExp := FALSE;
+	// g_Format is reset on close, not on init
+	bInit := FALSE;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="DialogCheckInit">
+      <LineId Id="10" Count="0" />
+      <LineId Id="15" Count="1" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="11" Count="1" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

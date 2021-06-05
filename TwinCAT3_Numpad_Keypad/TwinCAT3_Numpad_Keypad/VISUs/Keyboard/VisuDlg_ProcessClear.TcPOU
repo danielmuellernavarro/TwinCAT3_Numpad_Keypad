@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="VisuDlg_ProcessClear" Id="{aa4aa326-b5b0-4b60-9485-36f631ef65a3}" SpecialFunc="None">
+    <Declaration><![CDATA[/// This function is an enhancement of function VisuDlg_CheckedClear, that also resets the caret and
+/// selection.
+/// :return: Not used, always FALSE
+FUNCTION VisuDlg_ProcessClear : BOOL
+VAR_IN_OUT
+	/// This is the string representation of the variable value, that will be displayed in the visualization.
+	stOutputValue	: STRING;
+	/// This parameter is the variable value, that will be cleared
+	stVariableValue : STRING;
+	/// See VisuDlg_CheckedClear
+	flags 			: DWORD;
+	/// The current position of the caret. Either within the text or at the end of the text
+	iCaretPosition	: INT;
+	/// The start of the selected text (1-relative)
+	iSelectionStart	: INT;
+	/// The end of the selected text (1-relative).
+	iSelectionEnd	: INT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[VisuDlg_CheckedClear(stOutputValue, stVariableValue, flags);
+
+iCaretPosition	:= 1;
+iSelectionStart	:= 1;
+iSelectionEnd	:= 1;
+]]></ST>
+    </Implementation>
+    <LineIds Name="VisuDlg_ProcessClear">
+      <LineId Id="25" Count="4" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="VisuDlg_CheckedExpFloatFormatSwitch" Id="{24fa4acd-aadf-4b20-8097-98b030f836df}" SpecialFunc="None">
+    <Declaration><![CDATA[// switches the format of the displayed value
+// between exponential and float / decimal value
+FUNCTION VisuDlg_CheckedExpFloatFormatSwitch : BOOL
+VAR_IN_OUT
+	stOutputValue : STRING;
+	stVariableValue : STRING;
+END_VAR
+VAR_INPUT
+	bPassword: BOOL;
+END_VAR
+VAR
+	// no need to initialize the global flag for exp
+	bInitExp : BOOL := FALSE;
+	// just dummies, not needed here
+	iCaretPosition		: INT;
+	iSelectionStart		: INT;
+	iSelectionEnd		: INT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//dont call DialogCheckInit here
+
+VisuDlg_ProcessExpFloatFormatSwitch(stOutputValue, stVariableValue, iCaretPosition, iSelectionStart, iSelectionEnd, bInitExp, bPassword);]]></ST>
+    </Implementation>
+    <LineIds Name="VisuDlg_CheckedExpFloatFormatSwitch">
+      <LineId Id="17" Count="0" />
+      <LineId Id="69" Count="0" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

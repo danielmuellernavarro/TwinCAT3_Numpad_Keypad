@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="VisuDlg_ProcessExp" Id="{bde47dd5-8aef-4c9f-bff1-9a90d8ef3294}" SpecialFunc="None">
+    <Declaration><![CDATA[/// This function add the exponential notation to the value, shown in the numpadextended
+/// and changes caret position and selection
+FUNCTION VisuDlg_ProcessExp : BOOL
+VAR_IN_OUT
+	stOutputValue : STRING;
+	stVariableValue : STRING;
+	/// The current position of the caret. Either within the text or at the end of the text
+	iCaretPosition		: INT;
+	/// The start of the selected text (1-relative)
+	iSelectionStart		: INT;
+	/// The end of the selected text (1-relative). If the complete text is selected this
+	/// parameter is textlength + 1
+	iSelectionEnd		: INT;	
+	/// Initialize of global value for extended numpad, should be done with the first action.
+	bInit : BOOL;
+END_VAR
+VAR_INPUT
+	bPassword : BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[DialogCheckInitForExponential(bInit, stVariableValue);
+
+IF g_XExp = FALSE THEN
+	g_XExp := TRUE;	
+	
+	IF stVariableValue = '' THEN
+		VisuDlg_CheckedAppend(stOutputValue, stVariableValue, bInit, bPassword, '0');
+	END_IF
+	
+	VisuDlg_CheckedAppend(stOutputValue, stVariableValue, bInit, bPassword, 'e');
+	VisuDlg_CheckedAppend(stOutputValue, stVariableValue, bInit, bPassword, '+');
+	VisuDlg_CheckedAppend(stOutputValue, stVariableValue, bInit, bPassword, '0');
+	
+	// set the caret to the end of the value:
+	iCaretPosition := LEN(stOutputValue) + 1;
+	iSelectionStart := iSelectionEnd := iCaretPosition;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="VisuDlg_ProcessExp">
+      <LineId Id="32" Count="1" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="38" Count="0" />
+      <LineId Id="34" Count="3" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="30" Count="1" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="50" Count="0" />
+      <LineId Id="53" Count="0" />
+      <LineId Id="51" Count="1" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

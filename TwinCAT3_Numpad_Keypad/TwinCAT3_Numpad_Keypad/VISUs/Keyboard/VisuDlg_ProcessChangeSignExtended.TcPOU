@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="VisuDlg_ProcessChangeSignExtended" Id="{7fea596b-1b9e-43e3-b2d3-b896b9798fde}" SpecialFunc="None">
+    <Declaration><![CDATA[/// Replaces VisuDlg_CheckedChangeSignExtended.
+/// For usage of caret and selection, we use a different init, only of the global flag exp.
+FUNCTION VisuDlg_ProcessChangeSignExtended : BOOL
+VAR_IN_OUT
+	stOutputValue : STRING;
+	stVariableValue : STRING;
+	/// The current position of the caret. Either within the text or at the end of the text
+	iCaretPosition		: INT;
+	/// The start of the selected text (1-relative)
+	iSelectionStart		: INT;
+	/// The end of the selected text (1-relative). If the complete text is selected this
+	/// parameter is textlength + 1
+	iSelectionEnd		: INT;
+	// inits only the global flag for exp.
+	bInit : BOOL;
+END_VAR
+VAR_INPUT
+	bPassword: BOOL;
+	iFormatValue : INT;
+END_VAR
+VAR
+	iPos : INT;
+	iBuffer : INT;
+	stBuffer : STRING;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[DialogCheckInitForExponential(bInit, stVariableValue);
+
+IF LEN(stVariableValue) > 0 THEN
+	IF g_XExp = FALSE THEN
+		// 45: -
+		// change - to +, but + is not displayed
+		IF stVariableValue[0] = 45 THEN
+			stVariableValue := RIGHT(stVariableValue, LEN(stVariableValue) - 1);						
+			IF bPassword THEN
+				stOutputValue := RIGHT(stOutputValue, LEN(stOutputValue) - 1);
+			END_IF
+			iCaretPosition := iCaretPosition - 1;
+			iSelectionStart := iSelectionStart - 1;
+			iSelectionEnd := iSelectionEnd - 1;
+		ELSE
+			// change + to -
+			IF iFormatValue = Dialog_FormatTypes.HEX THEN
+				// in hex the - is never displayed, but the value is changed:
+				// 2 with +/-: 		-> F..FE
+				// F..FE with +/- 	-> 2				
+				stBuffer := CONCAT('16#', stVariableValue);
+				iBuffer := STRING_TO_INT(stBuffer);
+				IF iBuffer < 0 THEN
+					// F..FE with +/- 	-> 2
+					iBuffer := (-1) * iBuffer;
+					stBuffer := INT_TO_STRING(iBuffer);
+				ELSE	
+					// 2 with +/-: 		-> F..FE				
+					stBuffer := CONCAT('-', INT_TO_STRING(iBuffer));
+				END_IF				
+			END_IF
+			stVariableValue := CONCAT('-', stVariableValue);			
+			IF bPassword THEN
+				stOutputValue := CONCAT(stOutputValue, Dialog_Constants.PASSWORD_CHAR);
+			END_IF
+			IF iFormatValue = Dialog_FormatTypes.DECIMAL THEN
+				iCaretPosition := iCaretPosition + 1;
+				iSelectionStart := iSelectionStart + 1;
+				iSelectionEnd := iSelectionEnd + 1;
+			END_IF
+		END_IF
+		IF iFormatValue = Dialog_FormatTypes.HEX THEN
+			stVariableValue := VisuDlgUtil_FormatValueToHex(stBuffer);
+			// set to the end
+			iCaretPosition := LEN(stVariableValue) + 1;
+			iSelectionStart := iCaretPosition;
+			iSelectionEnd := iCaretPosition;		
+		END_IF
+	ELSE
+		// find the 'e' in the value and change the sign behind it.
+		// with 'e' we always show a sign
+		iPos := FIND(stVariableValue, 'e');
+		IF iPos > 0 THEN
+			IF stVariableValue[iPos] = 45 THEN
+				// change - to +:
+				stVariableValue := REPLACE(stVariableValue, '+', 1, iPos+1);				
+			ELSE
+				stVariableValue := REPLACE(stVariableValue, '-', 1, iPos+1);	
+			END_IF			
+		END_IF		
+	END_IF
+END_IF
+IF NOT bPassword THEN
+	stOutputValue := stVariableValue;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="VisuDlg_ProcessChangeSignExtended">
+      <LineId Id="95" Count="10" />
+      <LineId Id="158" Count="2" />
+      <LineId Id="106" Count="20" />
+      <LineId Id="169" Count="0" />
+      <LineId Id="172" Count="1" />
+      <LineId Id="170" Count="1" />
+      <LineId Id="127" Count="2" />
+      <LineId Id="168" Count="0" />
+      <LineId Id="162" Count="1" />
+      <LineId Id="161" Count="0" />
+      <LineId Id="130" Count="16" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

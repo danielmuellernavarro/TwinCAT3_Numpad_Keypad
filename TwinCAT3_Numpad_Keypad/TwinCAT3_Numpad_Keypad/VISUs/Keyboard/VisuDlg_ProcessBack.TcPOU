@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="VisuDlg_ProcessBack" Id="{2874dfb6-c14a-4870-be00-e4053bbd7e81}" SpecialFunc="None">
+    <Declaration><![CDATA[/// This function processes the <back> character according to the caret position and/or the current selection.
+/// Additional, values for the numpadextended will be initialised once
+FUNCTION VisuDlg_ProcessBack
+VAR_IN_OUT
+	/// This is the string representation of the variable value, that will be displayed
+	/// in the visualization. If the flag xPassword is TRUE the variable value will be
+	/// display with password characters
+	stOutputValue		: STRING;
+	/// This parameter is the variable value, where the character is appended/inserted
+	stVariableValue		: STRING;
+	/// The current position of the caret. Either within the text or at the end of the text
+	iCaretPosition		: INT;
+	/// The start of the selected text (1-relative)
+	iSelectionStart		: INT;
+	/// The end of the selected text (1-relative). If the complete text is selected this
+	/// parameter is textlength + 1
+	iSelectionEnd		: INT;
+	/// Initialize of global value, should be done with the first action.
+	bInit 				: BOOL;	
+END_VAR
+VAR
+	iTextLength			: INT;
+	iPositionToDelete	: INT;
+	iCountCharsToDelete	: INT;
+	// Before deleting the text we store the text to delete
+	sDeletedText		: STRING;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[DialogCheckInitForExponential(bInit, stVariableValue);
+
+// stOutputValue and stVariableValue should have the same length
+iTextLength := LEN(stVariableValue);
+
+IF 0 < iTextLength THEN
+	IF iSelectionStart = iSelectionEnd THEN
+		// No selection exists. We delete the character left the caret. It is necessary, that the caret is right the
+		// 1st character, i.e. the caret position must be > 1
+		IF iTextLength + 1 <= iCaretPosition THEN
+			// Caret at the end of the text. Delete the last character
+			sDeletedText := RIGHT(stVariableValue, 1);
+			stVariableValue := LEFT(stVariableValue, iTextLength - 1);
+			stOutputValue := LEFT(stOutputValue, iTextLength - 1);
+			// The caret moves one position to the left
+			iCaretPosition := iCaretPosition - 1;
+		ELSIF 1 < iCaretPosition THEN
+			iPositionToDelete := iCaretPosition - 1;
+			sDeletedText := MID(stVariableValue, 1, iPositionToDelete);
+			stVariableValue := DELETE(stVariableValue, 1, iPositionToDelete);
+			stOutputValue := DELETE(stOutputValue, 1, iPositionToDelete);
+			// The caret moves one position to the left
+			iCaretPosition := iCaretPosition - 1;
+		END_IF
+	ELSE
+		// The back key deletes the selected text and after that the caret is at the selection begin.
+		iCaretPosition := iSelectionStart;
+	
+		iCountCharsToDelete := iSelectionEnd - iSelectionStart;
+		sDeletedText := MID(stVariableValue, iCountCharsToDelete, iSelectionStart);
+		stVariableValue := DELETE(stVariableValue, iCountCharsToDelete, iSelectionStart);
+		stOutputValue := DELETE(stOutputValue, iCountCharsToDelete, iSelectionStart);
+		
+		// After that no selection exists.
+		iSelectionEnd := iSelectionStart;
+	END_IF
+END_IF
+
+IF g_XExp THEN
+	// If the 'e' character was deleted, we reset the g_XExp flag 
+	g_XExp := 0 = FIND(sDeletedText, 'e');
+END_IF
+]]></ST>
+    </Implementation>
+    <LineIds Name="VisuDlg_ProcessBack">
+      <LineId Id="118" Count="1" />
+      <LineId Id="22" Count="1" />
+      <LineId Id="42" Count="1" />
+      <LineId Id="47" Count="0" />
+      <LineId Id="59" Count="0" />
+      <LineId Id="69" Count="1" />
+      <LineId Id="113" Count="0" />
+      <LineId Id="72" Count="4" />
+      <LineId Id="61" Count="0" />
+      <LineId Id="63" Count="0" />
+      <LineId Id="114" Count="0" />
+      <LineId Id="64" Count="3" />
+      <LineId Id="53" Count="0" />
+      <LineId Id="50" Count="0" />
+      <LineId Id="77" Count="0" />
+      <LineId Id="79" Count="2" />
+      <LineId Id="115" Count="0" />
+      <LineId Id="82" Count="1" />
+      <LineId Id="68" Count="0" />
+      <LineId Id="86" Count="0" />
+      <LineId Id="85" Count="0" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="87" Count="1" />
+      <LineId Id="96" Count="0" />
+      <LineId Id="90" Count="0" />
+      <LineId Id="95" Count="0" />
+      <LineId Id="89" Count="0" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

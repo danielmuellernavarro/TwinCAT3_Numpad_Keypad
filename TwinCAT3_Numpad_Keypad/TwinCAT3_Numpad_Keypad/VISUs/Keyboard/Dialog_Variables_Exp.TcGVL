@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <GVL Name="Dialog_Variables_Exp" Id="{69d7b880-f73e-4c88-bed7-adcc072be452}">
+    <Declaration><![CDATA[{attribute 'explicit-init-exit-handling' := 'visu'}
+{attribute: 'global_init_slot' := '150000'}
+VAR_GLOBAL
+	// Value contains e (exp was pressed)
+	g_XExp : BOOL;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

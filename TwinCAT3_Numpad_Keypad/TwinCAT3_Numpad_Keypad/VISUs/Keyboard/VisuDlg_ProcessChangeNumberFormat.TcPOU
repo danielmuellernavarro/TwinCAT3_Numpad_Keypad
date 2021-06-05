@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="VisuDlg_ProcessChangeNumberFormat" Id="{c57df06d-08fc-4e80-99c2-504d48246d54}" SpecialFunc="None">
+    <Declaration><![CDATA[/// Update the variable display value in the Numpad for hex or dec and change the radio button.
+/// This function is an enhancement of function VisuDlg_CheckedChangeNumberFormat, that also modifies
+/// the caret and selection if the caret would be outside the text after the change of the display format.
+/// :return: Not used, always FALSE
+FUNCTION VisuDlg_ProcessChangeNumberFormat : BOOL
+VAR_IN_OUT
+	stOutputValue : STRING;
+	stVariableValue : STRING;
+	stMin : STRING;
+	stMax : STRING;
+	iFormatValue : INT;
+	/// The current position of the caret. Either within the text or at the end of the text
+	iCaretPosition	: INT;
+	/// The start of the selected text (1-relative)
+	iSelectionStart	: INT;
+	/// The end of the selected text (1-relative).
+	iSelectionEnd	: INT;
+END_VAR
+VAR_INPUT
+	bPassword: BOOL;
+	// use this way, because of integrated visu
+	// 0. dec , 1. hex
+	stClickedRadio : STRING;
+END_VAR
+VAR
+	i : INT;	
+	bChanged : BOOL;
+	iTextLengthBeforeChange	: INT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// simulate the radio button change
+IF iFormatValue = Dialog_FormatTypes.HEX AND stClickedRadio = '0' THEN
+	iFormatValue := Dialog_FormatTypes.DECIMAL;	
+	bChanged := TRUE;
+ELSIF iFormatValue = Dialog_FormatTypes.DECIMAL AND stClickedRadio = '1' THEN
+	iFormatValue := Dialog_FormatTypes.HEX;
+	bChanged := TRUE;
+END_IF
+
+// do some additional stuff
+IF bChanged THEN
+	// In order to check, whether the caret and/or selection has to be adjusted, we determine
+	// the text length before the change, that corresponds to the parameters iCaretPosition and iSelection[Start|End]
+	iTextLengthBeforeChange := LEN(stVariableValue);
+
+	IF iFormatValue = Dialog_FormatTypes.HEX THEN	
+		IF g_XExp THEN
+			// first change the value to float:
+			VisuDlg_CheckedExpFloatFormatSwitch(stOutputValue, stVariableValue, bPassword);
+		END_IF
+		stVariableValue := VisuDlgUtil_FormatValueToHex(stVariableValue);
+		
+		IF stMin <> '' THEN
+			stMin := VisuDlgUtil_FormatExpToG(stMin);
+		END_IF
+		IF stMax <> '' THEN
+			stMax := VisuDlgUtil_FormatExpToG(stMax);
+		END_IF
+	ELSE	
+		stVariableValue := VisuDlgUtil_FormatValueToDec(stVariableValue);
+		IF stMin <> '' THEN
+			stMin := VisuDlgUtil_FormatValueToDec(stMin);
+		END_IF
+		IF stMax <> '' THEN
+			stMax := VisuDlgUtil_FormatValueToDec(stMax);
+		END_IF
+	END_IF
+	
+	VisuDlgUtil_UpdateOutputValue(stOutputValue, stVariableValue, bPassword);
+	
+	// We adjust the caret and the selection.
+	VisuDlgUtil_AdjustCaretAndSelectionAfterNumberFormatChange(
+		iTextLengthBeforeChange,
+		stVariableValue,
+		iCaretPosition,
+		iSelectionStart,
+		iSelectionEnd
+	);
+END_IF
+]]></ST>
+    </Implementation>
+    <LineIds Name="VisuDlg_ProcessChangeNumberFormat">
+      <LineId Id="164" Count="6" />
+      <LineId Id="145" Count="0" />
+      <LineId Id="161" Count="0" />
+      <LineId Id="156" Count="0" />
+      <LineId Id="146" Count="0" />
+      <LineId Id="216" Count="3" />
+      <LineId Id="141" Count="1" />
+      <LineId Id="144" Count="0" />
+      <LineId Id="143" Count="0" />
+      <LineId Id="131" Count="0" />
+      <LineId Id="181" Count="0" />
+      <LineId Id="184" Count="0" />
+      <LineId Id="182" Count="0" />
+      <LineId Id="185" Count="0" />
+      <LineId Id="188" Count="0" />
+      <LineId Id="183" Count="0" />
+      <LineId Id="189" Count="0" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="117" Count="0" />
+      <LineId Id="186" Count="0" />
+      <LineId Id="179" Count="0" />
+      <LineId Id="190" Count="0" />
+      <LineId Id="187" Count="0" />
+      <LineId Id="180" Count="0" />
+      <LineId Id="191" Count="0" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="54" Count="0" />
+      <LineId Id="158" Count="0" />
+      <LineId Id="214" Count="0" />
+      <LineId Id="212" Count="0" />
+      <LineId Id="246" Count="0" />
+      <LineId Id="249" Count="0" />
+      <LineId Id="251" Count="0" />
+      <LineId Id="255" Count="0" />
+      <LineId Id="257" Count="0" />
+      <LineId Id="259" Count="0" />
+      <LineId Id="245" Count="0" />
+      <LineId Id="213" Count="0" />
+      <LineId Id="205" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

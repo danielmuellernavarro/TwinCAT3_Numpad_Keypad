@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <GVL Name="Dialog_Constants" Id="{41dbf630-505c-4020-aa11-c7f2c7c38206}">
+    <Declaration><![CDATA[{attribute 'explicit-init-exit-handling' := 'visu'}
+{attribute 'qualified_only'}
+VAR_GLOBAL CONSTANT
+	PASSWORD_CHAR : STRING(1) := '*';
+END_VAR
+VAR_GLOBAL
+	stTabl: INT;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

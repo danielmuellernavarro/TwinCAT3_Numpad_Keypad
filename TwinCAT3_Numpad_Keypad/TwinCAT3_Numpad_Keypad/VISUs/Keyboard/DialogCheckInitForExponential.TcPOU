@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="DialogCheckInitForExponential" Id="{1b59ad19-510b-498c-b493-12ca3094f4b1}" SpecialFunc="None">
+    <Declaration><![CDATA[// On opening of the NumpadExtended, we have to check the display value.
+// It can be displayed in exponential notation.
+// New function used with the VisuDlg_Process.. functions
+FUNCTION DialogCheckInitForExponential : BOOL
+VAR_IN_OUT	
+	bInit : BOOL;
+END_VAR
+VAR_INPUT
+	stValue : STRING;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Starting with V3.5.9.0 the value will not be reset, after the first 
+// action. Because of the new usage of the textfield with caret and selection.
+IF bInit THEN
+	bInit := FALSE;
+	g_XExp := FALSE;
+	
+	IF 0 < LEN(stValue) THEN
+		// value contains the 'e' character: set flag g_XExp 
+		IF FIND(stValue, 'e') > 0 THEN
+			g_XExp := TRUE;
+		END_IF
+	END_IF
+	
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="DialogCheckInitForExponential">
+      <LineId Id="28" Count="1" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="30" Count="1" />
+      <LineId Id="23" Count="2" />
+      <LineId Id="32" Count="1" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="44" Count="0" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

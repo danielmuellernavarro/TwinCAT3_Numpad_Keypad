@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <DUT Name="Dialog_FormatTypes" Id="{7fe538e7-cb17-457b-b7da-fdd8cd1c0fe1}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+TYPE Dialog_FormatTypes :
+(
+	DECIMAL := 0,
+	HEX
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

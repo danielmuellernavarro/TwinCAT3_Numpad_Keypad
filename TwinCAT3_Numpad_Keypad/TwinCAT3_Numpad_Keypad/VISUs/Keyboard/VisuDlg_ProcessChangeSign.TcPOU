@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="VisuDlg_ProcessChangeSign" Id="{152a58d9-f220-4918-a6f9-12a116d12897}" SpecialFunc="None">
+    <Declaration><![CDATA[/// This function changes the sign of the value
+/// and changes caret position and selection accordingly
+FUNCTION VisuDlg_ProcessChangeSign : BOOL
+VAR_IN_OUT
+	stOutputValue : STRING;
+	stVariableValue : STRING;
+	/// The current position of the caret. Either within the text or at the end of the text
+	iCaretPosition		: INT;
+	/// The start of the selected text (1-relative)
+	iSelectionStart		: INT;
+	/// The end of the selected text (1-relative). If the complete text is selected this
+	/// parameter is textlength + 1
+	iSelectionEnd		: INT;
+END_VAR
+VAR_INPUT
+	bPassword: BOOL;
+END_VAR
+VAR
+	// init only needed for numpadextended
+	bInit : BOOL := FALSE;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[VisuDlg_ProcessChangeSign := 
+VisuDlg_ProcessChangeSignExtended(stOutputValue, stVariableValue, iCaretPosition, iSelectionStart, iSelectionEnd, bInit, bPassword, 0);]]></ST>
+    </Implementation>
+    <LineIds Name="VisuDlg_ProcessChangeSign">
+      <LineId Id="7" Count="0" />
+      <LineId Id="159" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

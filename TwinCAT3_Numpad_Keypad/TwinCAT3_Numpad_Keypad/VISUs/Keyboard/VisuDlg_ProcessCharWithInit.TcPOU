@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="VisuDlg_ProcessCharWithInit" Id="{d23711fb-06e6-45e2-bb69-4bdc9d00c382}" SpecialFunc="None">
+    <Declaration><![CDATA[/// This function takes a given character and appends/inserts it in the string representing the variable value.
+/// To decide, which action has to be performed, the current caret position and the currently selected text is
+/// evaluated. 
+/// Additional, values for the numpadextended will be initialised once
+FUNCTION VisuDlg_ProcessCharWithInit
+VAR_IN_OUT
+	/// This is the string representation of the variable value, that will be displayed
+	/// in the visualization. If the flag xPassword is TRUE the variable value will be
+	/// display with password characters
+	stOutputValue		: STRING;
+	/// This parameter is the variable value, where the character is appended/inserted
+	stVariableValue		: STRING;
+	/// The current position of the caret. Either within the text or at the end of the text
+	iCaretPosition		: INT;
+	/// The start of the selected text (1-relative)
+	iSelectionStart		: INT;
+	/// The end of the selected text (1-relative). If the complete text is selected this
+	/// parameter is textlength + 1
+	iSelectionEnd		: INT;
+	/// Initialize of global value, for numpadextended, should be done with the first action.
+	bInit 				: BOOL;
+END_VAR
+VAR_INPUT
+	/// Inidicates, whether the entered value should be readable (FALSE) or displayed with
+	/// password characters
+	xPassword			: BOOL;
+	/// The character to append/insert
+	cToConsume			: STRING(1);
+END_VAR
+VAR
+	iTextLength			: INT;
+	cToConsumeInOutput	: STRING(1);
+	iInsertPosition		: INT;
+	iCountCharsToDelete	: INT;
+	// Before deleting the text we store the text to delete
+	sDeletedText		: STRING;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[DialogCheckInitForExponential(bInit, stVariableValue);
+
+// stOutputValue and stVariableValue should have the same length
+iTextLength := LEN(stVariableValue);
+
+IF xPassword THEN
+	cToConsumeInOutput := Dialog_Constants.PASSWORD_CHAR;
+ELSE
+	cToConsumeInOutput := cToConsume;
+END_IF
+
+IF iSelectionStart = iSelectionEnd THEN
+	// No selection exists
+	IF iCaretPosition <= iTextLength THEN
+		// Insert the character at the caret position. The caret position is the position before the character,
+		// whereas the position parameter for the INSERT call is the position after the character.  
+		iInsertPosition := iCaretPosition - 1;
+		stVariableValue := INSERT(stVariableValue, cToConsume, iInsertPosition);
+		stOutputValue := INSERT(stOutputValue, cToConsumeInOutput, iInsertPosition);
+	ELSIF iTextLength < iCaretPosition THEN
+		// Append the text
+		stVariableValue := CONCAT(stVariableValue, cToConsume);
+		stOutputValue := CONCAT(stOutputValue, cToConsumeInOutput);
+	END_IF
+ELSE
+	// The character replaces the selection. After that we have no selection and the caret will at the
+	// beginning of the (previous) selection
+	iCaretPosition := iSelectionStart;
+
+	iCountCharsToDelete := iSelectionEnd - iSelectionStart;
+	
+	sDeletedText := MID(stVariableValue, iCountCharsToDelete, iSelectionStart);
+	stVariableValue := DELETE(stVariableValue, iCountCharsToDelete, iSelectionStart);
+	stOutputValue := DELETE(stOutputValue, iCountCharsToDelete, iSelectionStart);
+
+	iInsertPosition := iSelectionStart - 1;
+	stVariableValue := INSERT(stVariableValue, cToConsume, iInsertPosition);
+	stOutputValue := INSERT(stOutputValue, cToConsumeInOutput, iInsertPosition);
+END_IF
+
+// Caret has to move one position to the right
+iCaretPosition := iCaretPosition + 1;
+// Entering a character always deletes the selection. So we can simply set the selection variables
+// to the caret position
+iSelectionStart := iCaretPosition;
+iSelectionEnd := iCaretPosition;
+
+IF g_XExp AND_THEN 0 < LEN(sDeletedText) THEN
+	// If the 'e' character was deleted, we reset the g_XExp flag 
+	g_XExp := 0 = FIND(sDeletedText, 'e');
+END_IF
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="VisuDlg_ProcessCharWithInit">
+      <LineId Id="136" Count="1" />
+      <LineId Id="43" Count="1" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="55" Count="0" />
+      <LineId Id="53" Count="1" />
+      <LineId Id="56" Count="0" />
+      <LineId Id="52" Count="0" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="38" Count="0" />
+      <LineId Id="45" Count="1" />
+      <LineId Id="67" Count="0" />
+      <LineId Id="57" Count="0" />
+      <LineId Id="66" Count="0" />
+      <LineId Id="59" Count="0" />
+      <LineId Id="61" Count="1" />
+      <LineId Id="60" Count="0" />
+      <LineId Id="63" Count="1" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="69" Count="0" />
+      <LineId Id="78" Count="1" />
+      <LineId Id="71" Count="0" />
+      <LineId Id="91" Count="0" />
+      <LineId Id="123" Count="1" />
+      <LineId Id="128" Count="0" />
+      <LineId Id="72" Count="1" />
+      <LineId Id="89" Count="1" />
+      <LineId Id="75" Count="0" />
+      <LineId Id="77" Count="0" />
+      <LineId Id="83" Count="0" />
+      <LineId Id="80" Count="1" />
+      <LineId Id="84" Count="4" />
+      <LineId Id="129" Count="4" />
+      <LineId Id="82" Count="0" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
